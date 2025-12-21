@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Registration - Admin Notification</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #10b981;
+            color: white;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #f9fafb;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        table tr:first-child td {
+            background: #3b82f6;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+        }
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        table td:first-child {
+            font-weight: bold;
+            color: #1e40af;
+            width: 35%;
+            background: #eff6ff;
+        }
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 5px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #1e40af;
+        }
+        .file-info {
+            background: #ecfdf5;
+            padding: 15px;
+            border-left: 4px solid #10b981;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-box {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-box .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e40af;
+        }
+        .stat-box .label {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔔 New Competition Registration</h1>
+            <p style="margin: 5px 0 0 0; font-size: 14px;">Admin Notification</p>
+        </div>
+
+        <p style="margin-top: 0;"><strong>Registration ID:</strong> {{registrationId}} <span class="badge">NEW</span></p>
+        <p style="color: #64748b; font-size: 14px;">Received on {{registrationDate}}</p>
+
+        <div class="section">
+            <h3>👤 Student Information</h3>
+            <table>
+                <tr>
+                    <td colspan="2">PARTICIPANT DETAILS</td>
+                </tr>
+                <tr>
+                    <td>Full Name</td>
+                    <td>{{firstName}} {{lastName}}</td>
+                </tr>
+                <tr>
+                    <td>Email Address</td>
+                    <td><a href="mailto:{{email}}">{{email}}</a></td>
+                </tr>
+                <tr>
+                    <td>Age Category</td>
+                    <td>{{category}}</td>
+                </tr>
+                <tr>
+                    <td>Experience Level</td>
+                    <td>{{experience}}</td>
+                </tr>
+                <tr>
+                    <td>School</td>
+                    <td>{{school}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>👨‍👩‍👧 Parent/Guardian Information</h3>
+            <table>
+                <tr>
+                    <td colspan="2">GUARDIAN DETAILS</td>
+                </tr>
+                <tr>
+                    <td>Guardian Name</td>
+                    <td>{{parentName}}</td>
+                </tr>
+                <tr>
+                    <td>Guardian Email</td>
+                    <td><a href="mailto:{{parentEmail}}">{{parentEmail}}</a></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>📝 Registration Details</h3>
+            <table>
+                <tr>
+                    <td colspan="2">PREFERENCES & CONSENT</td>
+                </tr>
+                <tr>
+                    <td>Terms Accepted</td>
+                    <td>{{#agreeTerms}}✅ Yes{{/agreeTerms}}{{^agreeTerms}}❌ No{{/agreeTerms}}</td>
+                </tr>
+                <tr>
+                    <td>Newsletter Opt-in</td>
+                    <td>{{#agreeNewsletter}}✅ Yes{{/agreeNewsletter}}{{^agreeNewsletter}}❌ No{{/agreeNewsletter}}</td>
+                </tr>
+                <tr>
+                    <td>Registration Date</td>
+                    <td>{{registrationDate}}</td>
+                </tr>
+            </table>
+        </div>
+
+        {{#submissionFileUrl}}
+        <div class="file-info">
+            <h3 style="margin-top: 0;">📎 Project File Uploaded</h3>
+            <table>
+                <tr>
+                    <td>File Name</td>
+                    <td>{{submissionFileName}}</td>
+                </tr>
+                <tr>
+                    <td>File Size</td>
+                    <td>{{submissionFileSize}}</td>
+                </tr>
+                <tr>
+                    <td>File Type</td>
+                    <td>{{submissionFileType}}</td>
+                </tr>
+                <tr>
+                    <td>Uploaded At</td>
+                    <td>{{submissionUploadedAt}}</td>
+                </tr>
+                <tr>
+                    <td>File URL</td>
+                    <td><a href="{{submissionFileUrl}}" target="_blank">Download File</a></td>
+                </tr>
+            </table>
+        </div>
+        {{/submissionFileUrl}}
+        {{^submissionFileUrl}}
+        <div style="background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; margin: 15px 0; border-radius: 5px;">
+            <p style="margin: 0;"><strong>ℹ️ No file uploaded</strong> - Student registered without uploading a project file.</p>
+        </div>
+        {{/submissionFileUrl}}
+
+        <div class="section">
+            <h3>🎯 Quick Actions</h3>
+            <ul style="margin: 10px 0;">
+                <li>Review participant details for completeness</li>
+                <li>Add to competition database/tracking system</li>
+                {{#submissionFileUrl}}
+                <li>Download and review submitted project file</li>
+                {{/submissionFileUrl}}
+                <li>Send welcome communication (already automated)</li>
+                <li>Monitor for any follow-up questions from participant</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p><strong>Kids Web Design Competition {{competitionYear}}</strong></p>
+            <p>Admin Notification System | Automated Email</p>
+            <p>This email was sent to {{adminEmail}} as the competition administrator.</p>
+        </div>
+    </div>
+</body>
+</html>

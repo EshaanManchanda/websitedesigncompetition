@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .content {
+      padding: 30px;
+    }
+    .info-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    .info-row {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .info-label {
+      font-weight: bold;
+      color: #667eea;
+      min-width: 120px;
+    }
+    .info-value {
+      color: #333;
+    }
+    .message-box {
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 20px;
+      margin: 20px 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .footer {
+      background-color: #f8f9fa;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background-color: #667eea;
+      color: white;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📧 New Contact Form Submission</h1>
+      <p style="margin: 10px 0 0 0;">Kids Web Design Competition</p>
+    </div>
+
+    <div class="content">
+      <p>A new contact form has been submitted. Please review and respond as needed.</p>
+
+      <div class="info-box">
+        <div class="info-row">
+          <div class="info-label">Name:</div>
+          <div class="info-value">{{name}}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Email:</div>
+          <div class="info-value"><a href="mailto:{{email}}">{{email}}</a></div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Age:</div>
+          <div class="info-value">{{age}} years old</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Subject:</div>
+          <div class="info-value"><span class="badge">{{subjectLabel}}</span></div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Submitted:</div>
+          <div class="info-value">{{submittedAt}}</div>
+        </div>
+        {{#id}}
+        <div class="info-row">
+          <div class="info-label">ID:</div>
+          <div class="info-value">{{id}}</div>
+        </div>
+        {{/id}}
+      </div>
+
+      <h3>Message:</h3>
+      <div class="message-box">{{message}}</div>
+
+      <p style="margin-top: 30px; padding: 15px; background-color: #fff3cd; border-radius: 4px; border-left: 4px solid #ffc107;">
+        <strong>⚡ Action Required:</strong> Please respond to this inquiry within 24 hours.
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>This is an automated notification from the Kids Web Design Competition platform.</p>
+      <p>Contact ID: {{id}}</p>
+    </div>
+  </div>
+</body>
+</html>

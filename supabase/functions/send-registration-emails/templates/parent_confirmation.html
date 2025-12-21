@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Child's Competition Registration</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .info-box {
+            background: #f0fdf4;
+            padding: 20px;
+            border-left: 4px solid #10b981;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #059669;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        table td:first-child {
+            font-weight: bold;
+            color: #059669;
+            width: 40%;
+        }
+        .alert {
+            background: #fef3c7;
+            padding: 15px;
+            border-left: 4px solid #f59e0b;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✅ Registration Confirmed</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px;">Kids Web Design Competition {{competitionYear}}</p>
+        </div>
+
+        <p>Dear <strong>{{parentName}}</strong>,</p>
+
+        <p>This email confirms that your child, <strong>{{firstName}} {{lastName}}</strong>, has been successfully registered for the Kids Web Design Competition {{competitionYear}}.</p>
+
+        <div class="info-box">
+            <h3>📋 Registration Information</h3>
+            <table>
+                <tr>
+                    <td>Student Name</td>
+                    <td>{{firstName}} {{lastName}}</td>
+                </tr>
+                <tr>
+                    <td>Student Email</td>
+                    <td>{{email}}</td>
+                </tr>
+                <tr>
+                    <td>Age Category</td>
+                    <td>{{category}}</td>
+                </tr>
+                <tr>
+                    <td>Experience Level</td>
+                    <td>{{experience}}</td>
+                </tr>
+                <tr>
+                    <td>School</td>
+                    <td>{{school}}</td>
+                </tr>
+                {{#submissionFileUrl}}
+                <tr>
+                    <td>Project Uploaded</td>
+                    <td>Yes ✓</td>
+                </tr>
+                {{/submissionFileUrl}}
+                <tr>
+                    <td>Registration Date</td>
+                    <td>{{registrationDate}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>📅 Competition Timeline</h3>
+        <table>
+            <tr>
+                <td>Registration Open</td>
+                <td>{{registrationOpenDate}}</td>
+            </tr>
+            <tr>
+                <td>Registration Closes</td>
+                <td>{{registrationCloseDate}}</td>
+            </tr>
+            <tr>
+                <td>Submission Deadline</td>
+                <td>{{submissionDeadline}}</td>
+            </tr>
+            <tr>
+                <td>Results Announced</td>
+                <td>{{resultsAnnouncementDate}}</td>
+            </tr>
+        </table>
+
+        <div class="alert">
+            <h3 style="margin-top: 0;">⚠️ Important Information</h3>
+            <ul style="margin: 10px 0;">
+                <li>Your child must submit their project by <strong>{{submissionDeadline}}</strong></li>
+                <li>All projects must be original work</li>
+                <li>Parental supervision is encouraged, but the work should be the child's own</li>
+                <li>Winners will be notified via email on {{resultsAnnouncementDate}}</li>
+            </ul>
+        </div>
+
+        <h3>🎓 Competition Guidelines</h3>
+        <p>Please ensure your child follows these important guidelines:</p>
+        <ul>
+            <li><strong>Original Work:</strong> All code and content must be created by the participant</li>
+            <li><strong>Age Appropriate:</strong> Content should be suitable for the participant's age group</li>
+            <li><strong>Complete Submission:</strong> Include all necessary files and documentation</li>
+            <li><strong>Code Comments:</strong> Encourage your child to comment their code</li>
+            <li><strong>Testing:</strong> Test the website thoroughly before submission</li>
+        </ul>
+
+        <h3>👨‍👩‍👧 Parent/Guardian Support</h3>
+        <p>We encourage you to:</p>
+        <ul>
+            <li>Provide a safe and supportive learning environment</li>
+            <li>Help your child manage their time effectively</li>
+            <li>Encourage creativity and problem-solving</li>
+            <li>Review the competition guidelines together</li>
+            <li>Celebrate the learning experience, regardless of the outcome</li>
+        </ul>
+
+        <div class="info-box">
+            <h3>📧 Questions or Concerns?</h3>
+            <p>If you have any questions about the competition, please don't hesitate to contact us.</p>
+            <p><strong>Email:</strong> support@kidswebcomp.com<br>
+            <strong>Parent Email on File:</strong> {{parentEmail}}</p>
+        </div>
+
+        <p style="margin-top: 30px;">Thank you for supporting your child's learning journey in web design and coding!</p>
+
+        <p>Best regards,<br>
+        <strong>The Kids Web Design Competition Team</strong></p>
+
+        <div class="footer">
+            <p>This email was sent to {{parentEmail}} as the parent/guardian of {{firstName}} {{lastName}}.</p>
+            <p>© {{competitionYear}} Kids Web Design Competition. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

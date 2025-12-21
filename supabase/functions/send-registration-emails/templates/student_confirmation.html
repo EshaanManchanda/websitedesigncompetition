@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Kids Web Design Competition!</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 30px -30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .info-box {
+            background: #f8f9ff;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .timeline {
+            margin: 20px 0;
+        }
+        .timeline-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #fff;
+            border-left: 3px solid #667eea;
+            border-radius: 5px;
+        }
+        .timeline-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Welcome to the Competition!</h1>
+            <p style="margin: 10px 0 0 0; font-size: 16px;">Kids Web Design Competition {{competitionYear}}</p>
+        </div>
+
+        <p>Hi <strong>{{firstName}}</strong>,</p>
+
+        <p>Congratulations! Your registration for the Kids Web Design Competition has been confirmed! We're excited to see your creativity and coding skills in action.</p>
+
+        <div class="info-box">
+            <h3>📋 Your Registration Details</h3>
+            <p><strong>Name:</strong> {{firstName}} {{lastName}}<br>
+            <strong>Email:</strong> {{email}}<br>
+            <strong>Age Category:</strong> {{category}}<br>
+            <strong>Experience Level:</strong> {{experience}}<br>
+            <strong>School:</strong> {{school}}<br>
+            {{#submissionFileUrl}}
+            <strong>Project File:</strong> Uploaded ✓<br>
+            {{/submissionFileUrl}}
+            <strong>Registration Date:</strong> {{registrationDate}}</p>
+        </div>
+
+        <h3>🗓️ Important Dates</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <strong>Registration Period</strong>
+                {{registrationOpenDate}} - {{registrationCloseDate}}
+            </div>
+            <div class="timeline-item">
+                <strong>Submission Deadline</strong>
+                {{submissionDeadline}} <span class="highlight">Don't miss it!</span>
+            </div>
+            <div class="timeline-item">
+                <strong>Results Announcement</strong>
+                {{resultsAnnouncementDate}}
+            </div>
+        </div>
+
+        <h3>🚀 Next Steps</h3>
+        <ol>
+            <li><strong>Start Creating:</strong> Begin working on your amazing website project!</li>
+            <li><strong>Follow the Guidelines:</strong> Make sure your project meets all competition requirements</li>
+            {{^submissionFileUrl}}
+            <li><strong>Upload Your Project:</strong> Submit your completed project before the deadline</li>
+            {{/submissionFileUrl}}
+            <li><strong>Stay Updated:</strong> Check your email regularly for important updates</li>
+        </ol>
+
+        <h3>💡 Tips for Success</h3>
+        <ul>
+            <li>Be creative and original - show us your unique ideas!</li>
+            <li>Test your website on different devices and browsers</li>
+            <li>Include clear documentation and comments in your code</li>
+            <li>Don't wait until the last minute - start early!</li>
+            <li>Have fun and learn something new!</li>
+        </ul>
+
+        <div class="info-box">
+            <h3>📧 Need Help?</h3>
+            <p>If you have any questions or need assistance, don't hesitate to contact us. We're here to help you succeed!</p>
+            <p><strong>Support Email:</strong> support@kidswebcomp.com</p>
+        </div>
+
+        <p style="margin-top: 30px;">Good luck with your project! We can't wait to see what you create! 🌟</p>
+
+        <p>Best wishes,<br>
+        <strong>The Kids Web Design Competition Team</strong></p>
+
+        <div class="footer">
+            <p>This email was sent to {{email}} because you registered for the Kids Web Design Competition {{competitionYear}}.</p>
+            <p>© {{competitionYear}} Kids Web Design Competition. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
