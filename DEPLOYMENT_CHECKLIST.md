@@ -135,7 +135,7 @@ curl --version
 
 ### Verify Backend
 ```bash
-curl http://localhost:3000/api/health
+curl http://localhost:8080/api/health
 ```
 - [ ] Returns: `{"status":"healthy",...}`
 - [ ] No errors in: `pm2 logs kids-competition-api`
