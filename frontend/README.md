@@ -69,9 +69,26 @@ The development server runs on `http://localhost:8080`
 
 ## Environment Variables
 
-Frontend environment variables should be prefixed with `VITE_` to be accessible in the browser.
+Frontend environment variables must be prefixed with `VITE_` to be accessible in the browser.
 
-See `.env.example` at the project root for available variables.
+### Setup
+
+1. Copy the example file:
+   ```bash
+   cp frontend/.env.example frontend/.env
+   ```
+
+2. Configure your variables in `frontend/.env`:
+   - `VITE_API_URL` - Backend API endpoint
+   - `VITE_COMPETITION_YEAR` - Competition year
+   - `VITE_REGISTRATION_OPEN_DATE` - Registration start date
+   - `VITE_REGISTRATION_CLOSE_DATE` - Registration end date
+   - `VITE_SUBMISSION_DEADLINE` - Submission deadline
+   - `VITE_MAX_FILE_SIZE_MB` - Max file upload size
+
+### Available Variables
+
+See `frontend/.env.example` for all available variables and documentation.
 
 ## Build Output
 
