@@ -99,10 +99,10 @@ chmod 755 logs
 echo "  ✓ Logs directory created"
 
 # Verify dist folder exists
-if [ -d "/var/www/websitedesigncompetition/dist" ]; then
-    echo "  ✓ Frontend dist/ folder found"
+if [ -d "/var/www/websitedesigncompetition/frontend/dist" ]; then
+    echo "  ✓ Frontend frontend/dist/ folder found"
 else
-    echo "  ERROR: Frontend dist/ folder not found!"
+    echo "  ERROR: Frontend frontend/dist/ folder not found!"
     echo "  Please build and upload frontend first"
     exit 1
 fi
