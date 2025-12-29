@@ -7,6 +7,7 @@ const errorHandler = require('./middleware/errorHandler');
 // Import routes
 const registrationRoutes = require('./routes/registrations');
 const contactRoutes = require('./routes/contact');
+const emailTestRoutes = require('./routes/emailTest');
 
 /**
  * Express Application Setup
@@ -84,6 +85,18 @@ const contactLimiter = rateLimit({
   }
 });
 
+// Rate limiting for email test endpoints
+const emailTestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // 20 test emails per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: 'Too many email test attempts, please try again later'
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
@@ -96,6 +109,7 @@ app.get('/api/health', (req, res) => {
 // API routes
 app.use('/api/registrations', registrationLimiter, registrationRoutes);
 app.use('/api/contact', contactLimiter, contactRoutes);
+app.use('/api/test-email', emailTestLimiter, emailTestRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -105,7 +119,8 @@ app.get('/', (req, res) => {
     endpoints: {
       health: '/api/health',
       registrations: '/api/registrations',
-      contact: '/api/contact'
+      contact: '/api/contact',
+      testEmail: '/api/test-email'
     }
   });
 });

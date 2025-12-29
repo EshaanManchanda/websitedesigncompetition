@@ -29,16 +29,6 @@ const createRegistration = async (req, res, next) => {
 
     console.log('Processing registration for:', email);
 
-    // Check if email already exists
-    const existingRegistration = await Registration.findOne({ email: email.toLowerCase() });
-    if (existingRegistration) {
-      return res.status(409).json({
-        success: false,
-        error: 'Email already registered',
-        code: 'DUPLICATE_EMAIL'
-      });
-    }
-
     // Create registration document (without file info initially)
     const registration = new Registration({
       firstName,

@@ -36,7 +36,7 @@ The Website Designing Competition platform is designed to organize and manage we
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | **React** | 18.3.1 | UI framework |
-| **Vite** | 5.4.1 | Build tool and dev server |
+| **Vite** | 6.4.1 | Build tool and dev server |
 | **TypeScript** | 5.5.3 | Type-safe development |
 | **shadcn/ui** | Latest | Component library (Radix UI) |
 | **Tailwind CSS** | 3.4.11 | Utility-first CSS framework |
@@ -133,7 +133,7 @@ kids_web_competition/
 
 Ensure you have the following installed:
 
-- **Node.js**: v18 or higher ([Download](https://nodejs.org/))
+- **Node.js**: v20 or higher ([Download](https://nodejs.org/))
 - **npm**: Comes with Node.js
 - **Git**: For version control ([Download](https://git-scm.com/))
 - **MongoDB**: Atlas account or local instance
@@ -321,17 +321,47 @@ CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 
-# SMTP Email
-SMTP_HOST=smtp.hostinger.com
-SMTP_PORT=587
-SMTP_USER=your_email@domain.com
-SMTP_PASSWORD=your_smtp_password
+# Email Configuration
+# Development: Mailtrap (credentials already configured)
+# Production: Hostinger SMTP
+SMTP_HOST_DEV=smtp.mailtrap.io         # Development only
+SMTP_PORT_DEV=2525                     # Development only
+SMTP_USER_DEV=your_mailtrap_user       # Development only
+SMTP_PASSWORD_DEV=your_mailtrap_pass   # Development only
 
-# Admin
-ADMIN_EMAIL=admin@websitedesigningcompetition.com
+SMTP_HOST=smtp.hostinger.com           # Production only
+SMTP_PORT=587                          # Production only
+SMTP_USER=contact@websitedesigningcompetition.com
+SMTP_PASSWORD=your_hostinger_password  # Production only
+
+# Email Addresses
+FROM_EMAIL=contact@websitedesigningcompetition.com
+ADMIN_EMAIL=contact@websitedesigningcompetition.com
+SUPPORT_EMAIL=contact@websitedesigningcompetition.com
 ```
 
 **Detailed Setup**: See [Environment Variables Guide](docs/setup/ENVIRONMENT_VARIABLES.md)
+
+### Email Configuration
+
+The backend uses environment-aware SMTP configuration:
+
+- **Development**: Mailtrap (smtp.mailtrap.io) - captures all emails for testing
+  - Credentials already configured in `backend/.env`
+  - Access inbox at https://mailtrap.io
+  - No real emails delivered
+
+- **Production**: Hostinger SMTP (smtp.hostinger.com) - real email delivery
+  - Configure in `backend/.env.production`
+  - Account: contact@websitedesigningcompetition.com
+  - Port 587 with STARTTLS
+
+**Test Endpoints**: Use `/api/test-email` endpoints to verify SMTP
+- `GET /api/test-email/connection` - Test SMTP connection
+- `POST /api/test-email/send` - Send test email
+- `GET /api/test-email/config` - View configuration
+
+**See**: [Backend README - Email Configuration](backend/README.md#email-configuration) for detailed setup
 
 ---
 

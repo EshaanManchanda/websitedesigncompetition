@@ -159,18 +159,6 @@ const Register: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Check if email already exists
-      const emailExists = await registrationAPI.checkEmailExists(formData.email);
-      if (emailExists) {
-        setErrors({ email: 'This email is already registered' });
-        toast({
-          title: "Registration Failed",
-          description: "This email address is already registered. Please use a different email.",
-          variant: "destructive",
-        });
-        return;
-      }
-
       // Submit registration with file upload (backend handles everything)
       const result = await registrationAPI.submitRegistration({
         firstName: formData.firstName,

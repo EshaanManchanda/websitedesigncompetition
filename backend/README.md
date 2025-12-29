@@ -189,7 +189,7 @@ All API responses follow this standard structure:
 
 ## Prerequisites
 
-- Node.js v18+ or v20 LTS
+- Node.js v20 LTS or higher
 - MongoDB (local or MongoDB Atlas)
 - Cloudinary account
 - SMTP server (Hostinger or Mailtrap for dev)
@@ -628,6 +628,124 @@ Templates are located in `src/templates/emails/`:
 
 See `.env.example` for all required variables.
 
+## Email Configuration
+
+The application uses **Nodemailer** with SMTP for sending emails. It automatically switches between development (Mailtrap) and production (Hostinger) based on `NODE_ENV`.
+
+### Development (Mailtrap)
+
+Mailtrap captures all emails for testing without delivering to real recipients.
+
+**Configuration** (already set in `.env`):
+```env
+NODE_ENV=development
+SMTP_HOST_DEV=smtp.mailtrap.io
+SMTP_PORT_DEV=2525
+SMTP_USER_DEV=17e3c100c05f7e
+SMTP_PASSWORD_DEV=656d58dca78891
+```
+
+**Access Mailtrap**:
+- URL: https://mailtrap.io
+- Login with team credentials
+- View captured emails in inbox
+
+### Production (Hostinger SMTP)
+
+Production uses Hostinger SMTP for real email delivery.
+
+**Configuration** (set in `.env.production` or production `.env`):
+```env
+NODE_ENV=production
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=contact@websitedesigningcompetition.com
+SMTP_PASSWORD=your-actual-password
+```
+
+**Email Accounts**:
+- `contact@websitedesigningcompetition.com` - Primary sender
+- All notifications sent to this address
+
+### Email Test Endpoints
+
+Test SMTP configuration without triggering registration/contact flows:
+
+**1. Test SMTP Connection**
+```bash
+GET http://localhost:5050/api/test-email/connection
+
+# Response:
+{
+  "success": true,
+  "message": "SMTP connection verified successfully",
+  "details": {
+    "environment": "development",
+    "host": "smtp.mailtrap.io",
+    "port": "2525"
+  }
+}
+```
+
+**2. Send Test Email**
+```bash
+POST http://localhost:5050/api/test-email/send
+Content-Type: application/json
+
+{
+  "to": "your-email@example.com"
+}
+
+# Response:
+{
+  "success": true,
+  "message": "Test email sent successfully",
+  "details": {
+    "to": "your-email@example.com",
+    "messageId": "<unique-id>",
+    "environment": "development"
+  }
+}
+```
+
+**3. View Email Configuration**
+```bash
+GET http://localhost:5050/api/test-email/config
+
+# Response: Sanitized config (no passwords)
+{
+  "success": true,
+  "config": {
+    "environment": "development",
+    "smtp": { ... },
+    "emails": { ... }
+  }
+}
+```
+
+### Email Templates
+
+Templates are located in `src/templates/emails/`:
+- `student_confirmation.html` - Sent to registered student
+- `parent_confirmation.html` - Sent to parent/guardian
+- `admin_notification.html` - Sent to admin for new registrations
+- `contact_admin.html` - Sent to admin for contact form submissions
+
+Templates use Mustache-style syntax: `{{variable}}`, `{{#condition}}...{{/condition}}`
+
+### Email Flow
+
+**Registration** (3 emails sent):
+1. Student confirmation → student's email
+2. Parent confirmation → parent's email
+3. Admin notification → admin email
+
+**Contact Form** (1 email sent):
+1. Admin notification → admin email
+
+All emails are sent **asynchronously** (non-blocking), so they don't delay API responses. If email fails, the registration/contact submission still succeeds.
+
 ## Troubleshooting
 
 ### MongoDB Connection Issues
@@ -639,10 +757,49 @@ sudo systemctl status mongodb
 ```
 
 ### Email Not Sending
+
+**1. Test Connection First**
 ```bash
-# Verify SMTP credentials
-# Check logs for email errors
-# Test with Mailtrap in development
+curl http://localhost:5050/api/test-email/connection
+```
+
+**2. Common Errors**
+
+- **EAUTH** (Authentication Failed)
+  - Check SMTP username/password in `.env`
+  - For Hostinger: Verify email account exists
+  - Test login at webmail.hostinger.com
+
+- **ETIMEDOUT** (Connection Timeout)
+  - Verify SMTP host: `smtp.hostinger.com` (production) or `smtp.mailtrap.io` (dev)
+  - Check port: `587` (production) or `2525` (dev)
+  - Check firewall allows outbound connections
+
+- **ENOTFOUND** (Host Not Found)
+  - Check `SMTP_HOST` or `SMTP_HOST_DEV` spelling
+  - Verify DNS resolution: `nslookup smtp.hostinger.com`
+
+**3. Check Startup Logs**
+```bash
+# Look for this message:
+✓ Email service ready (development)
+
+# Or connection failure with hints:
+✗ Email service connection FAILED
+💡 Hint: Authentication failed. Check SMTP username/password.
+```
+
+**4. Test Email Sending**
+```bash
+curl -X POST http://localhost:5050/api/test-email/send \
+  -H "Content-Type: application/json" \
+  -d '{"to": "test@example.com"}'
+```
+
+**5. Verify Environment**
+```bash
+# Check current environment
+curl http://localhost:5050/api/test-email/config
 ```
 
 ### File Upload Issues
