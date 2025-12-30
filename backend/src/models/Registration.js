@@ -19,8 +19,6 @@ const registrationSchema = new mongoose.Schema({
     required: [true, 'Email is required'],
     trim: true,
     lowercase: true,
-    unique: true,
-    index: true,
     match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
   },
   age: {
@@ -122,7 +120,7 @@ const registrationSchema = new mongoose.Schema({
 });
 
 // Indexes for performance
-registrationSchema.index({ email: 1 }, { unique: true });
+registrationSchema.index({ email: 1 });
 registrationSchema.index({ createdAt: -1 });
 registrationSchema.index({ category: 1 });
 

@@ -25,14 +25,35 @@ const createTransporter = () => {
         }
       };
 
-  const transporter = nodemailer.createTransporter(config);
+  const transporter = nodemailer.createTransport(config);
 
   // Verify connection
   transporter.verify((error, success) => {
+    const envType = isDevelopment ? 'development' : 'production';
+    const host = isDevelopment ? process.env.SMTP_HOST_DEV : process.env.SMTP_HOST;
+    const port = isDevelopment ? process.env.SMTP_PORT_DEV : process.env.SMTP_PORT;
+
     if (error) {
-      console.error(`✗ Email service connection failed (${isDevelopment ? 'development' : 'production'}):`, error.message);
+      console.error(`\n${'='.repeat(60)}`);
+      console.error(`✗ Email service connection FAILED (${envType})`);
+      console.error(`Host: ${host}:${port}`);
+      console.error(`Error: ${error.message}`);
+      console.error(`${'='.repeat(60)}\n`);
+
+      // Provide troubleshooting hints
+      if (error.message.includes('EAUTH')) {
+        console.error('💡 Hint: Authentication failed. Check SMTP username/password.');
+      } else if (error.message.includes('ECONNECTION') || error.message.includes('ETIMEDOUT')) {
+        console.error('💡 Hint: Connection timeout. Check SMTP host/port and firewall.');
+      } else if (error.message.includes('ENOTFOUND')) {
+        console.error('💡 Hint: Host not found. Check SMTP_HOST configuration.');
+      }
     } else {
-      console.log(`✓ Email service ready (${isDevelopment ? 'development' : 'production'})`);
+      console.log(`\n${'='.repeat(60)}`);
+      console.log(`✓ Email service ready (${envType})`);
+      console.log(`Host: ${host}:${port}`);
+      console.log(`From: ${config.auth.user}`);
+      console.log(`${'='.repeat(60)}\n`);
     }
   });
 
