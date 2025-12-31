@@ -23,7 +23,13 @@ p
 # Temporary files
 tmp/
 temp/
-uploads/
+
+# Uploaded files (but keep directory structure)
+uploads/*
+!uploads/.gitkeep
+!uploads/submissions/
+uploads/submissions/*
+!uploads/submissions/.gitkeep
 
 # PM2
 .pm2/

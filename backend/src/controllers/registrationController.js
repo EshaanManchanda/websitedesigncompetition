@@ -23,6 +23,7 @@ const createRegistration = async (req, res, next) => {
       parentEmail,
       category,
       experience,
+      competitionDate,
       agreeTerms,
       agreeNewsletter
     } = req.body;
@@ -40,6 +41,7 @@ const createRegistration = async (req, res, next) => {
       parentEmail,
       category,
       experience,
+      competitionDate,
       agreeTerms,
       agreeNewsletter: agreeNewsletter || false
     });
@@ -51,19 +53,38 @@ const createRegistration = async (req, res, next) => {
     // Handle file upload if provided
     if (req.file) {
       try {
-        console.log('Uploading file to Cloudinary...');
+        console.log('Uploading file to storage provider...');
         const fileData = await uploadFile(req.file, registration._id.toString());
 
-        // Update registration with file information
-        registration.submissionFileUrl = fileData.url;
+        // Store proxy URL for API responses (hides actual storage URL)
+        registration.submissionFileUrl = `/api/files/${registration._id}/download`;
         registration.submissionFileName = fileData.name;
         registration.submissionFileSize = fileData.size;
         registration.submissionFileType = fileData.type;
         registration.submissionUploadedAt = new Date(fileData.uploadedAt);
-        registration.cloudinaryPublicId = fileData.publicId;
+
+        // Store provider information AND actual storage URL/path in metadata
+        registration.uploadProvider = fileData.provider;
+
+        // For Cloudinary: storageUrl is the actual URL
+        // For Local: storageUrl is the file path
+        const storageUrl = fileData.provider === 'local' ? fileData.path : fileData.url;
+
+        registration.fileMetadata = {
+          ...(fileData.metadata || {}),
+          storageUrl: storageUrl,              // Actual Cloudinary URL or local file path
+          originalUrl: fileData.url,           // Original URL field (may be proxy for local)
+          ...(fileData.path && { path: fileData.path }),           // Include path for local files
+          ...(fileData.relativePath && { relativePath: fileData.relativePath })  // Relative path
+        };
+
+        // Store cloudinaryPublicId for backward compatibility (if using Cloudinary)
+        if (fileData.publicId) {
+          registration.cloudinaryPublicId = fileData.publicId;
+        }
 
         await registration.save();
-        console.log('✅ File uploaded and registration updated');
+        console.log(`✅ File uploaded via ${fileData.provider} and registration updated`);
       } catch (fileError) {
         console.error('File upload failed:', fileError);
         // Continue - registration is saved, just no file

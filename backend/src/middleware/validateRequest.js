@@ -73,12 +73,17 @@ const validateRegistration = [
     .notEmpty().withMessage('Experience level is required')
     .isIn(['beginner', 'intermediate', 'advanced']).withMessage('Invalid experience level'),
 
+  body('competitionDate')
+  .notEmpty().withMessage('Competition date is required'),
+
   body('agreeTerms')
+    .toBoolean()
     .isBoolean().withMessage('Terms agreement must be boolean')
     .custom(value => value === true).withMessage('Must agree to terms and conditions'),
 
   body('agreeNewsletter')
     .optional()
+    .toBoolean()
     .isBoolean().withMessage('Newsletter agreement must be boolean'),
 
   validate

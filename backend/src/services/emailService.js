@@ -52,6 +52,24 @@ const sendEmailWithRetry = async (options, maxRetries = 3) => {
 };
 
 /**
+ * Convert relative URL to absolute URL for emails
+ * @param {String} url - URL to convert
+ * @returns {String} - Absolute URL
+ */
+const toAbsoluteUrl = (url) => {
+  if (!url) return null;
+
+  // Already absolute URL
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+
+  // Relative URL - convert to absolute
+  const baseUrl = process.env.BASE_URL || process.env.LOCAL_STORAGE_URL || 'http://localhost:5050';
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
+/**
  * Send registration confirmation emails to student, parent, and admin
  * @param {Object} registrationData - Registration data
  * @returns {Promise<Object>} - Email send results
@@ -75,7 +93,7 @@ const sendRegistrationEmails = async (registrationData) => {
     parentEmail: registrationData.parentEmail,
     agreeTerms: registrationData.agreeTerms,
     agreeNewsletter: registrationData.agreeNewsletter,
-    submissionFileUrl: registrationData.submissionFileUrl || null,
+    submissionFileUrl: toAbsoluteUrl(registrationData.submissionFileUrl),
     submissionFileName: registrationData.submissionFileName || null,
     submissionFileSize: registrationData.submissionFileSize ? formatFileSize(registrationData.submissionFileSize) : null,
     submissionFileType: registrationData.submissionFileType || null,
@@ -89,6 +107,9 @@ const sendRegistrationEmails = async (registrationData) => {
     resultsAnnouncementDate: process.env.RESULTS_ANNOUNCEMENT_DATE || 'April 15, 2025',
     adminEmail: emailConfig.adminEmail
   };
+
+  // Helper function to wait between emails (avoid rate limiting)
+  const waitBetweenEmails = () => new Promise(resolve => setTimeout(resolve, 2000)); // 2 second delay
 
   try {
     // Send student confirmation email
@@ -106,6 +127,9 @@ const sendRegistrationEmails = async (registrationData) => {
     results.student = { sent: false, error: error.message };
   }
 
+  // Wait before sending next email to avoid rate limiting
+  await waitBetweenEmails();
+
   try {
     // Send parent confirmation email
     console.log('Sending parent confirmation email...');
@@ -121,6 +145,9 @@ const sendRegistrationEmails = async (registrationData) => {
     console.error('Error sending parent email:', error);
     results.parent = { sent: false, error: error.message };
   }
+
+  // Wait before sending next email to avoid rate limiting
+  await waitBetweenEmails();
 
   try {
     // Send admin notification email

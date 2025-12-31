@@ -15,6 +15,7 @@ interface FormData {
   parentName: string;
   category: string;
   experience: string;
+  competitionDate: string;
   agreeTerms: boolean;
   agreeNewsletter: boolean;
   uploadedFile: File | null;
@@ -36,6 +37,7 @@ const Register: React.FC = () => {
     parentName: '',
     category: '',
     experience: '',
+    competitionDate: import.meta.env.VITE_SUBMISSION_DEADLINE || '',
     agreeTerms: false,
     agreeNewsletter: false,
     uploadedFile: null,
@@ -170,6 +172,7 @@ const Register: React.FC = () => {
         parentEmail: formData.parentEmail,
         category: formData.category,
         experience: formData.experience,
+        competitionDate: formData.competitionDate,
         agreeTerms: formData.agreeTerms,
         agreeNewsletter: formData.agreeNewsletter,
       }, formData.uploadedFile);
@@ -476,6 +479,19 @@ const Register: React.FC = () => {
                     ))}
                   </select>
                   {errors.experience && <p className="text-red-500 text-sm mt-1">{errors.experience}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Competition Date
+                  </label>
+                  <input
+                    type="text"
+                    name="competitionDate"
+                    value={new Date(formData.competitionDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    readOnly
+                    className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">This is the official submission deadline.</p>
                 </div>
               </div>
             </div>

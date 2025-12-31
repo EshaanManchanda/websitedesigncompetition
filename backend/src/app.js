@@ -8,6 +8,7 @@ const errorHandler = require('./middleware/errorHandler');
 const registrationRoutes = require('./routes/registrations');
 const contactRoutes = require('./routes/contact');
 const emailTestRoutes = require('./routes/emailTest');
+const fileRoutes = require('./routes/files');
 
 /**
  * Express Application Setup
@@ -110,6 +111,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/registrations', registrationLimiter, registrationRoutes);
 app.use('/api/contact', contactLimiter, contactRoutes);
 app.use('/api/test-email', emailTestLimiter, emailTestRoutes);
+app.use('/api/files', fileRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -120,7 +122,8 @@ app.get('/', (req, res) => {
       health: '/api/health',
       registrations: '/api/registrations',
       contact: '/api/contact',
-      testEmail: '/api/test-email'
+      testEmail: '/api/test-email',
+      files: '/api/files/:registrationId/download'
     }
   });
 });

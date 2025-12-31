@@ -112,6 +112,15 @@ const Submission: React.FC = () => {
                   </li>
                 ))}
               </ul>
+              <div className="mt-6 text-center">
+                <Button 
+                  onClick={() => navigate('/register')} 
+                  size="lg" 
+                  className="w-full sm:w-auto bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  Submit Entry
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
