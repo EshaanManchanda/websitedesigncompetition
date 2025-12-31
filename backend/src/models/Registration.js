@@ -69,6 +69,11 @@ const registrationSchema = new mongoose.Schema({
     }
   },
 
+  competitionDate: {
+    type: String,
+    required: [true, 'Competition date is required']
+  },
+
   // Agreement Flags
   agreeTerms: {
     type: Boolean,
@@ -113,6 +118,17 @@ const registrationSchema = new mongoose.Schema({
   cloudinaryPublicId: {
     type: String,
     default: null
+  },
+
+  // Storage Provider Information
+  uploadProvider: {
+    type: String,
+    enum: ['cloudinary', 'local'],
+    default: null
+  },
+  fileMetadata: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
   }
 }, {
   timestamps: true,
@@ -120,7 +136,6 @@ const registrationSchema = new mongoose.Schema({
 });
 
 // Indexes for performance
-registrationSchema.index({ email: 1 });
 registrationSchema.index({ createdAt: -1 });
 registrationSchema.index({ category: 1 });
 

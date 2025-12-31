@@ -116,7 +116,7 @@ const Header: React.FC = () => {
 
           {/* CTA Button & Mobile Menu */}
           <div className="flex items-center space-x-4">
-            <Button onClick={() => handleNavigation({ href: '#submission', type: 'section' })} size="lg" className="hidden sm:inline-flex">
+            <Button onClick={() => handleNavigation({ href: '/register', type: 'page' })} size="lg" className="hidden sm:inline-flex">
               Submit Entry
             </Button>
             <MobileNavigation />

@@ -6,24 +6,24 @@ const createTransporter = () => {
 
   const config = isDevelopment
     ? {
-        // Development (Mailtrap)
-        host: process.env.SMTP_HOST_DEV,
-        port: parseInt(process.env.SMTP_PORT_DEV || '2525'),
-        auth: {
-          user: process.env.SMTP_USER_DEV,
-          pass: process.env.SMTP_PASSWORD_DEV
-        }
+      // Development (Mailtrap)
+      host: process.env.SMTP_HOST_DEV,
+      port: parseInt(process.env.SMTP_PORT_DEV || '2525'),
+      auth: {
+        user: process.env.SMTP_USER_DEV,
+        pass: process.env.SMTP_PASSWORD_DEV
       }
+    }
     : {
-        // Production (Hostinger)
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASSWORD
-        }
-      };
+      // Production (Hostinger)
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD
+      }
+    };
 
   const transporter = nodemailer.createTransport(config);
 

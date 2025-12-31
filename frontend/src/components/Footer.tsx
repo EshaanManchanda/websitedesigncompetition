@@ -196,7 +196,7 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-8 border-t border-white/20">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-gray-200">
-              © 2024 Kids Web Design Competition. All rights reserved.
+              © 2026 Kids Web Design Competition. All rights reserved.
             </div>
             <div className="flex space-x-6">
               <button className="text-sm text-gray-200/50 cursor-not-allowed" aria-disabled="true" title="Coming soon">

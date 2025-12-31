@@ -22,6 +22,7 @@ export const registrationAPI = {
     parentEmail: string;
     category: string;
     experience: string;
+    competitionDate: string;
     agreeTerms: boolean;
     agreeNewsletter: boolean;
   }, file?: File | null) {
@@ -109,6 +110,65 @@ export const contactAPI = {
       return result;
     } catch (error) {
       console.error('Contact API error:', error);
+      throw error;
+    }
+  }
+};
+
+/**
+ * File API
+ * Handles file download operations
+ */
+export const fileAPI = {
+  /**
+   * Get download URL for a registration file
+   */
+  getDownloadUrl(registrationId: string): string {
+    return `${API_URL}/files/${registrationId}/download`;
+  },
+
+  /**
+   * Get download URL as attachment (forces download)
+   */
+  getDownloadAttachmentUrl(registrationId: string): string {
+    return `${API_URL}/files/${registrationId}/download-attachment`;
+  },
+
+  /**
+   * Download file for a registration
+   */
+  async downloadFile(registrationId: string): Promise<Blob> {
+    try {
+      const response = await fetch(`${API_URL}/files/${registrationId}/download`);
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'File download failed');
+      }
+
+      return await response.blob();
+    } catch (error) {
+      console.error('File download API error:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get file metadata
+   */
+  async getFileInfo(registrationId: string) {
+    try {
+      const response = await fetch(`${API_URL}/files/${registrationId}/info`);
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to get file info');
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error('File info API error:', error);
       throw error;
     }
   }
