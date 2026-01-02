@@ -41,7 +41,7 @@ const upload = multer({
   fileFilter: fileFilter,
   limits: {
     fileSize: MAX_FILE_SIZE_BYTES,
-    files: 1 // Only allow 1 file per upload
+    files: 5 // Allow multiple files (submission + payment + etc)
   }
 });
 
@@ -75,7 +75,41 @@ const uploadSingleFile = (fieldName = 'submissionFile') => {
   };
 };
 
+/**
+ * Middleware to handle multiple file fields with validation
+ * @param {Array} fields - Array of objects { name: 'fieldname', maxCount: 1 }
+ */
+const uploadMultipleFields = (fields) => {
+  return (req, res, next) => {
+    const uploadHandler = upload.fields(fields);
+
+    uploadHandler(req, res, (err) => {
+      if (err) {
+        return next(err);
+      }
+
+      // Validate all uploaded files
+      if (req.files) {
+        const allFiles = Object.values(req.files).flat();
+
+        for (const file of allFiles) {
+          const validation = validateFile(file);
+          if (!validation.valid) {
+            return res.status(400).json({
+              success: false,
+              error: `File ${file.originalname}: ${validation.error}`
+            });
+          }
+        }
+      }
+
+      next();
+    });
+  };
+};
+
 module.exports = {
   upload,
-  uploadSingleFile
+  uploadSingleFile,
+  uploadMultipleFields
 };

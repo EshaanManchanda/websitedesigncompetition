@@ -260,6 +260,39 @@
         </div>
         {{/submissionFileUrl}}
 
+        {{#paymentScreenshotUrl}}
+        <div class="file-info" style="background: #fdf2f8; border-left-color: #ec4899;">
+            <h3 style="margin-top: 0; color: #be185d;">💸 Payment Screenshot</h3>
+            <table>
+                <tr>
+                    <td>File Name</td>
+                    <td>{{paymentScreenshotName}}</td>
+                </tr>
+                <tr>
+                    <td>File Size</td>
+                    <td>{{paymentScreenshotSize}}</td>
+                </tr>
+                <tr>
+                    <td>File Type</td>
+                    <td>{{paymentScreenshotType}}</td>
+                </tr>
+                <tr>
+                    <td>Uploaded At</td>
+                    <td>{{paymentUploadedAt}}</td>
+                </tr>
+                <tr>
+                    <td>Screenshot URL</td>
+                    <td><a href="{{paymentScreenshotUrl}}" target="_blank" style="color: #be185d; font-weight: bold;">View Payment Proof</a></td>
+                </tr>
+            </table>
+        </div>
+        {{/paymentScreenshotUrl}}
+        {{^paymentScreenshotUrl}}
+        <div style="background: #fff1f2; padding: 15px; border-left: 4px solid #e11d48; margin: 15px 0; border-radius: 5px;">
+             <p style="margin: 0;"><strong>⚠️ No payment screenshot</strong> - Student registered without uploading proof of payment.</p>
+        </div>
+        {{/paymentScreenshotUrl}}
+
         <div class="section">
             <h3>🎯 Quick Actions</h3>
             <ul style="margin: 10px 0;">

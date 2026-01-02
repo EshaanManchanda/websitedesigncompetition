@@ -101,7 +101,7 @@ const registrationSchema = new mongoose.Schema({
     type: Number,
     default: null,
     validate: {
-      validator: function(v) {
+      validator: function (v) {
         return v === null || v <= parseInt(process.env.MAX_FILE_SIZE_BYTES || '52428800');
       },
       message: 'File size cannot exceed 50MB'
@@ -117,6 +117,32 @@ const registrationSchema = new mongoose.Schema({
   },
   cloudinaryPublicId: {
     type: String,
+    default: null
+  },
+
+  // Payment Screenshot Information
+  paymentScreenshotUrl: {
+    type: String,
+    default: null
+  },
+  paymentScreenshotName: {
+    type: String,
+    default: null
+  },
+  paymentScreenshotSize: {
+    type: Number,
+    default: null
+  },
+  paymentScreenshotType: {
+    type: String,
+    default: null
+  },
+  paymentUploadedAt: {
+    type: Date,
+    default: null
+  },
+  paymentFileMetadata: {
+    type: mongoose.Schema.Types.Mixed,
     default: null
   },
 
@@ -140,7 +166,7 @@ registrationSchema.index({ createdAt: -1 });
 registrationSchema.index({ category: 1 });
 
 // Virtual for full name
-registrationSchema.virtual('fullName').get(function() {
+registrationSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
@@ -149,7 +175,7 @@ registrationSchema.set('toJSON', { virtuals: true });
 registrationSchema.set('toObject', { virtuals: true });
 
 // Pre-save hook for email normalization
-registrationSchema.pre('save', function(next) {
+registrationSchema.pre('save', function (next) {
   if (this.email) {
     this.email = this.email.toLowerCase().trim();
   }

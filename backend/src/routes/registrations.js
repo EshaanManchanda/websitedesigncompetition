@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { createRegistration, checkEmailExists, getAllRegistrations } = require('../controllers/registrationController');
 const { validateRegistration, validateEmail } = require('../middleware/validateRequest');
-const { uploadSingleFile } = require('../middleware/fileUpload');
+const { uploadMultipleFields } = require('../middleware/fileUpload');
 
 /**
  * Registration Routes
@@ -16,7 +16,10 @@ const { uploadSingleFile } = require('../middleware/fileUpload');
  */
 router.post(
   '/',
-  uploadSingleFile('submissionFile'),
+  uploadMultipleFields([
+    { name: 'submissionFile', maxCount: 1 },
+    { name: 'paymentScreenshot', maxCount: 1 }
+  ]),
   validateRegistration,
   createRegistration
 );
