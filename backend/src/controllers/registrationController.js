@@ -51,45 +51,75 @@ const createRegistration = async (req, res, next) => {
     console.log(`✅ Registration created: ${registration._id}`);
 
     // Handle file upload if provided
-    if (req.file) {
-      try {
-        console.log('Uploading file to storage provider...');
-        const fileData = await uploadFile(req.file, registration._id.toString());
+    // Handle file uploads
+    if (req.files || req.file) {
+      // Handle Submission File
+      const submissionFile = req.files?.submissionFile?.[0] || req.file;
+      if (submissionFile) {
+        try {
+          console.log('Uploading submission file...');
+          const fileData = await uploadFile(submissionFile, registration._id.toString());
 
-        // Store proxy URL for API responses (hides actual storage URL)
-        registration.submissionFileUrl = `/api/files/${registration._id}/download`;
-        registration.submissionFileName = fileData.name;
-        registration.submissionFileSize = fileData.size;
-        registration.submissionFileType = fileData.type;
-        registration.submissionUploadedAt = new Date(fileData.uploadedAt);
+          registration.submissionFileUrl = `/api/files/${registration._id}/download`;
+          registration.submissionFileName = fileData.name;
+          registration.submissionFileSize = fileData.size;
+          registration.submissionFileType = fileData.type;
+          registration.submissionUploadedAt = new Date(fileData.uploadedAt);
+          registration.uploadProvider = fileData.provider; // Main provider tracking
 
-        // Store provider information AND actual storage URL/path in metadata
-        registration.uploadProvider = fileData.provider;
+          const storageUrl = fileData.provider === 'local' ? fileData.path : fileData.url;
 
-        // For Cloudinary: storageUrl is the actual URL
-        // For Local: storageUrl is the file path
-        const storageUrl = fileData.provider === 'local' ? fileData.path : fileData.url;
+          registration.fileMetadata = {
+            ...(fileData.metadata || {}),
+            storageUrl: storageUrl,
+            originalUrl: fileData.url,
+            ...(fileData.path && { path: fileData.path }),
+            ...(fileData.relativePath && { relativePath: fileData.relativePath })
+          };
 
-        registration.fileMetadata = {
-          ...(fileData.metadata || {}),
-          storageUrl: storageUrl,              // Actual Cloudinary URL or local file path
-          originalUrl: fileData.url,           // Original URL field (may be proxy for local)
-          ...(fileData.path && { path: fileData.path }),           // Include path for local files
-          ...(fileData.relativePath && { relativePath: fileData.relativePath })  // Relative path
-        };
-
-        // Store cloudinaryPublicId for backward compatibility (if using Cloudinary)
-        if (fileData.publicId) {
-          registration.cloudinaryPublicId = fileData.publicId;
+          if (fileData.publicId) {
+            registration.cloudinaryPublicId = fileData.publicId;
+          }
+          console.log(`✅ Submission file uploaded`);
+        } catch (fileError) {
+          console.error('Submission file upload failed:', fileError);
         }
-
-        await registration.save();
-        console.log(`✅ File uploaded via ${fileData.provider} and registration updated`);
-      } catch (fileError) {
-        console.error('File upload failed:', fileError);
-        // Continue - registration is saved, just no file
-        // We don't want to fail the entire registration if file upload fails
       }
+
+      // Handle Payment Screenshot
+      if (req.files?.paymentScreenshot?.[0]) {
+        try {
+          console.log('Uploading payment screenshot...');
+          // Use a suffix or distinct folder structure if supported by uploadFile, 
+          // assumes uploadFile handles naming or pathing reasonably.
+          // passing registration._id still keeps it associated with the user/reg.
+          const paymentFile = req.files.paymentScreenshot[0];
+          const fileData = await uploadFile(paymentFile, `${registration._id}/payment`);
+
+          registration.paymentScreenshotUrl = `/api/files/${registration._id}/payment`; // Use dedicated payment endpoint 
+          // For consistency with submission, we might want a proxy, but direct URL is easier if public/signed.
+          // Let's stick to storing the URL. Ideally we'd have a specific proxy for payments too if secure.
+          // For now, let's assume direct access or authenticated generic file access.
+
+          registration.paymentScreenshotName = fileData.name;
+          registration.paymentScreenshotSize = fileData.size;
+          registration.paymentScreenshotType = fileData.type;
+          registration.paymentUploadedAt = new Date(fileData.uploadedAt);
+
+          registration.paymentFileMetadata = {
+            folder: 'payment',
+            provider: fileData.provider,
+            path: fileData.path,
+            url: fileData.url
+          };
+
+          console.log(`✅ Payment screenshot uploaded`);
+        } catch (paymentError) {
+          console.error('Payment screenshot upload failed:', paymentError);
+        }
+      }
+
+      await registration.save();
     }
 
     // Send confirmation emails (non-blocking)

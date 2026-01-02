@@ -25,7 +25,7 @@ export const registrationAPI = {
     competitionDate: string;
     agreeTerms: boolean;
     agreeNewsletter: boolean;
-  }, file?: File | null) {
+  }, files?: { submissionFile?: File | null; paymentScreenshot?: File | null }) {
     try {
       const formData = new FormData();
 
@@ -34,9 +34,13 @@ export const registrationAPI = {
         formData.append(key, value.toString());
       });
 
-      // Append file if provided
-      if (file) {
-        formData.append('submissionFile', file);
+      // Append files if provided
+      if (files?.submissionFile) {
+        formData.append('submissionFile', files.submissionFile);
+      }
+
+      if (files?.paymentScreenshot) {
+        formData.append('paymentScreenshot', files.paymentScreenshot);
       }
 
       const response = await fetch(`${API_URL}/registrations`, {

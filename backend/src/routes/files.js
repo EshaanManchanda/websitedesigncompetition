@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   downloadRegistrationFile,
   downloadAsAttachment,
+  downloadPaymentScreenshot,
   getFileMetadata
 } = require('../controllers/fileController');
 
@@ -24,6 +25,13 @@ router.get('/:registrationId/download', downloadRegistrationFile);
  * @access  Public (can be restricted later with authentication middleware)
  */
 router.get('/:registrationId/download-attachment', downloadAsAttachment);
+
+/**
+ * @route   GET /api/files/:registrationId/payment
+ * @desc    Download payment screenshot (inline)
+ * @access  Public
+ */
+router.get('/:registrationId/payment', downloadPaymentScreenshot);
 
 /**
  * @route   GET /api/files/:registrationId/info
