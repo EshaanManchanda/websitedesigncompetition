@@ -12,6 +12,7 @@ const corsOptions = {
 
     const allowedOrigins = [
       process.env.FRONTEND_URL,
+      process.env.FRONTEND_WWW_URL, // WWW subdomain
       process.env.API_SUBDOMAIN_URL, // API subdomain
       'http://localhost:5173', // Vite dev server
       'http://localhost:3000', // Alternative dev port
