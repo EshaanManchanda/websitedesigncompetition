@@ -1,36 +1,18 @@
-const cors = require('cors');
-
 /**
- * CORS Configuration Middleware
- * Configures Cross-Origin Resource Sharing
+ * CORS Middleware - Pass-through
+ * 
+ * CORS is handled by nginx in production.
+ * This middleware is a no-op to maintain compatibility with the app structure.
+ * 
+ * Nginx configuration handles:
+ * - Access-Control-Allow-Origin (dynamic based on request origin)
+ * - Access-Control-Allow-Methods
+ * - Access-Control-Allow-Headers
+ * - Access-Control-Allow-Credentials
+ * - OPTIONS preflight requests
  */
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-
-    const allowedOrigins = [
-      process.env.FRONTEND_URL,
-      process.env.FRONTEND_WWW_URL, // WWW subdomain
-      process.env.API_SUBDOMAIN_URL, // API subdomain
-      'http://localhost:5173', // Vite dev server
-      'http://localhost:3000', // Alternative dev port
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:3000'
-    ].filter(Boolean);
-
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      console.warn(`CORS blocked request from origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+module.exports = (req, res, next) => {
+  // Pass through - nginx handles CORS
+  next();
 };
-
-module.exports = cors(corsOptions);

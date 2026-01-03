@@ -41,7 +41,7 @@ app.use(helmet({
   }
 }));
 
-// CORS
+// CORS (handled by nginx in production, this is a pass-through middleware)
 app.use(corsMiddleware);
 
 // Body parsing middleware
