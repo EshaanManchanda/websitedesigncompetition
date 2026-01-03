@@ -3,6 +3,7 @@ module.exports = {
     name: 'kids-competition-api',
     script: './src/server.js',
     cwd: './backend',
+    env_file: './backend/.env',
     instances: 2,
     exec_mode: 'cluster',
     watch: false,
