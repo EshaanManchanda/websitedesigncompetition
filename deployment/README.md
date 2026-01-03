@@ -416,7 +416,27 @@ sudo mkdir -p /var/www/websitedesigncompetition
 sudo chown -R $USER:$USER /var/www/websitedesigncompetition
 ```
 
-### Step 8: Clone Git Repository
+### Step 8: Create Certbot Directory
+
+**IMPORTANT:** This directory is required for SSL certificate generation. Without it, Certbot will fail with a 500 error.
+
+```bash
+# Create directory for Let's Encrypt ACME challenges
+sudo mkdir -p /var/www/certbot
+
+# Set ownership to nginx user (www-data)
+sudo chown -R www-data:www-data /var/www/certbot
+
+# Set proper permissions
+sudo chmod -R 755 /var/www/certbot
+
+# Verify directory was created
+ls -la /var/www/ | grep certbot
+```
+
+**Why this is needed:** Let's Encrypt uses the `.well-known/acme-challenge/` path to verify domain ownership during SSL certificate generation. Nginx serves these challenge files from `/var/www/certbot`.
+
+### Step 9: Clone Git Repository
 
 ```bash
 # Navigate to project directory
@@ -606,32 +626,142 @@ sudo systemctl reload nginx
 
 ## SSL Certificates
 
-### Step 1: Generate SSL Certificates
+### Step 0: Verify Certbot Directory Exists
 
-**For main domain and www subdomain:**
+**CRITICAL:** Before generating SSL certificates, ensure the certbot directory exists. If you followed the Initial VPS Setup, this should already be created. If not, create it now:
 
 ```bash
-sudo certbot --nginx -d websitedesigningcompetition.com -d www.websitedesigningcompetition.com --non-interactive --agree-tos --email admin@websitedesigningcompetition.com --redirect
+# Check if directory exists
+ls -la /var/www/certbot
+
+# If it doesn't exist, create it
+sudo mkdir -p /var/www/certbot
+sudo chown -R www-data:www-data /var/www/certbot
+sudo chmod -R 755 /var/www/certbot
 ```
 
-**For API subdomain:**
+**Why this is needed:** Certbot uses the `.well-known/acme-challenge/` path to verify domain ownership. Without this directory, nginx will return a 500 error and SSL certificate generation will fail with an "unauthorized" error.
+
+### Step 1: Generate API Subdomain Certificate First
+
+**IMPORTANT:** Generate the API subdomain certificate BEFORE the main domain certificate. This avoids a chicken-and-egg problem where the nginx HTTPS block references certificate files that don't exist yet.
 
 ```bash
+# Generate API subdomain certificate first
 sudo certbot --nginx -d api.websitedesigningcompetition.com --non-interactive --agree-tos --email admin@websitedesigningcompetition.com --redirect
 ```
 
-### Step 2: Verify Certificates
+**Verify it was created:**
+```bash
+sudo certbot certificates
+# Should show: api.websitedesigningcompetition.com with valid certificate
+```
+
+### Step 2: Handle Main Domain Certificate (Choose One Method)
+
+The main domain certificate generation can fail if the HTTPS server block references non-existent certificates. Choose one of these methods:
+
+#### Method A: Temporary Certificate Path (Recommended)
+
+Use the API subdomain certificate temporarily, then generate the main domain certificate:
+
+```bash
+# 1. Backup current config
+sudo cp /etc/nginx/sites-available/nginx-website-design.conf /etc/nginx/sites-available/nginx-website-design.conf.backup
+
+# 2. Edit the config to temporarily use API certificate
+sudo nano /etc/nginx/sites-available/nginx-website-design.conf
+```
+
+Find the HTTPS Frontend block (around line 65-67) and change:
+```nginx
+# FROM:
+ssl_certificate /etc/letsencrypt/live/websitedesigningcompetition.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/websitedesigningcompetition.com/privkey.pem;
+ssl_trusted_certificate /etc/letsencrypt/live/websitedesigningcompetition.com/chain.pem;
+
+# TO:
+ssl_certificate /etc/letsencrypt/live/api.websitedesigningcompetition.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/api.websitedesigningcompetition.com/privkey.pem;
+ssl_trusted_certificate /etc/letsencrypt/live/api.websitedesigningcompetition.com/chain.pem;
+```
+
+Save the file (Ctrl+X, Y, Enter).
+
+```bash
+# 3. Test and reload nginx
+sudo nginx -t
+sudo systemctl reload nginx
+
+# 4. Generate main domain certificate (Certbot will auto-update paths)
+sudo certbot --nginx -d websitedesigningcompetition.com -d www.websitedesigningcompetition.com --non-interactive --agree-tos --email admin@websitedesigningcompetition.com --redirect
+
+# 5. Certbot automatically updates the certificate paths back to the correct ones
+# No need to restore the backup - Certbot handles it
+
+# 6. Reload nginx
+sudo systemctl reload nginx
+```
+
+#### Method B: Comment Out HTTPS Block (Alternative)
+
+If Method A doesn't work, temporarily disable the HTTPS block:
+
+```bash
+# 1. Backup config
+sudo cp /etc/nginx/sites-available/nginx-website-design.conf /etc/nginx/sites-available/nginx-website-design.conf.backup
+
+# 2. Edit config
+sudo nano /etc/nginx/sites-available/nginx-website-design.conf
+```
+
+Comment out the entire HTTPS Frontend server block (lines 58-162) by adding `#` at the start of each line.
+
+Keep the HTTP block (port 80) uncommented.
+
+Save and exit.
+
+```bash
+# 3. Test and reload
+sudo nginx -t
+sudo systemctl reload nginx
+
+# 4. Generate certificate
+sudo certbot --nginx -d websitedesigningcompetition.com -d www.websitedesigningcompetition.com --non-interactive --agree-tos --email admin@websitedesigningcompetition.com --redirect
+
+# 5. Restore original config
+sudo cp /etc/nginx/sites-available/nginx-website-design.conf.backup /etc/nginx/sites-available/nginx-website-design.conf
+
+# 6. Test and reload
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### Step 3: Verify All Certificates
 
 ```bash
 # List all certificates
 sudo certbot certificates
 
-# Should show:
+# Should show both:
 # - websitedesigningcompetition.com (with www.websitedesigningcompetition.com)
 # - api.websitedesigningcompetition.com
 ```
 
-### Step 3: Test Auto-Renewal
+**Expected output:**
+```
+Certificate Name: websitedesigningcompetition.com
+  Domains: websitedesigningcompetition.com www.websitedesigningcompetition.com
+  Expiry Date: [90 days from now]
+  Certificate Path: /etc/letsencrypt/live/websitedesigningcompetition.com/fullchain.pem
+
+Certificate Name: api.websitedesigningcompetition.com
+  Domains: api.websitedesigningcompetition.com
+  Expiry Date: [90 days from now]
+  Certificate Path: /etc/letsencrypt/live/api.websitedesigningcompetition.com/fullchain.pem
+```
+
+### Step 4: Test Auto-Renewal
 
 ```bash
 # Dry run certificate renewal
@@ -640,7 +770,7 @@ sudo certbot renew --dry-run
 # Should output: "Congratulations, all simulated renewals succeeded"
 ```
 
-### Step 4: Final Nginx Test
+### Step 5: Final Nginx Test
 
 ```bash
 # Test nginx configuration (should have no SSL warnings now)
@@ -648,7 +778,14 @@ sudo nginx -t
 
 # Reload nginx with SSL enabled
 sudo systemctl reload nginx
+
+# Test HTTPS access
+curl -I https://websitedesigningcompetition.com
+curl -I https://www.websitedesigningcompetition.com
+curl -I https://api.websitedesigningcompetition.com
 ```
+
+All three domains should return `HTTP/2 200` or `301/302` redirects without SSL errors.
 
 ---
 
@@ -972,7 +1109,71 @@ npm run build
 curl -I https://websitedesigningcompetition.com
 ```
 
-### Issue 3: SSL Certificate Errors
+### Issue 3: Certbot Fails with 500 Error During ACME Challenge
+
+**Cause**: HTTPS server block references non-existent SSL certificates, or `/var/www/certbot` directory is missing.
+
+**Symptoms**:
+```
+Certbot failed to authenticate some domains (authenticator: nginx).
+The Certificate Authority reported these problems:
+  Domain: websitedesigningcompetition.com
+  Type:   unauthorized
+  Detail: Invalid response from http://websitedesigningcompetition.com/.well-known/acme-challenge/: 500
+```
+
+**Solution**:
+
+**Step 1: Verify certbot directory exists**
+```bash
+ls -la /var/www/certbot
+# If doesn't exist:
+sudo mkdir -p /var/www/certbot
+sudo chown -R www-data:www-data /var/www/certbot
+sudo chmod -R 755 /var/www/certbot
+```
+
+**Step 2: Check nginx error logs**
+```bash
+sudo tail -100 /var/log/nginx/website-design-error.log
+sudo tail -100 /var/log/nginx/error.log
+```
+
+**Step 3: If directory exists but still failing, temporarily use API certificate**
+```bash
+# Backup config
+sudo cp /etc/nginx/sites-available/nginx-website-design.conf /etc/nginx/sites-available/nginx-website-design.conf.backup
+
+# Edit config
+sudo nano /etc/nginx/sites-available/nginx-website-design.conf
+```
+
+Find the HTTPS Frontend block's SSL certificate lines (around line 65-67) and change:
+```nginx
+# FROM:
+ssl_certificate /etc/letsencrypt/live/websitedesigningcompetition.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/websitedesigningcompetition.com/privkey.pem;
+ssl_trusted_certificate /etc/letsencrypt/live/websitedesigningcompetition.com/chain.pem;
+
+# TO (temporarily use API certificate):
+ssl_certificate /etc/letsencrypt/live/api.websitedesigningcompetition.com/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/api.websitedesigningcompetition.com/privkey.pem;
+ssl_trusted_certificate /etc/letsencrypt/live/api.websitedesigningcompetition.com/chain.pem;
+```
+
+Save and continue:
+```bash
+# Test and reload
+sudo nginx -t && sudo systemctl reload nginx
+
+# Try Certbot again (it will auto-fix the certificate paths)
+sudo certbot --nginx -d websitedesigningcompetition.com -d www.websitedesigningcompetition.com --non-interactive --agree-tos --email admin@websitedesigningcompetition.com --redirect
+
+# Reload nginx
+sudo systemctl reload nginx
+```
+
+### Issue 4: SSL Certificate Expired or Invalid
 
 **Cause**: Certificates expired or not properly configured.
 
@@ -992,7 +1193,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-### Issue 4: Port 5050 Already in Use
+### Issue 5: Port 5050 Already in Use
 
 **Cause**: Another process using port 5050.
 
@@ -1010,7 +1211,7 @@ sudo kill -9 PID
 pm2 restart kids-competition-api
 ```
 
-### Issue 5: Nginx Test Fails
+### Issue 6: Nginx Test Fails
 
 **Cause**: Syntax error in configuration.
 
@@ -1030,7 +1231,7 @@ ls -la /etc/nginx/snippets/
 sudo cp /var/www/websitedesigncompetition/deployment/nginx/snippets/*.conf /etc/nginx/snippets/
 ```
 
-### Issue 6: Backend Crashes or Restarts Frequently
+### Issue 7: Backend Crashes or Restarts Frequently
 
 **Cause**: Memory issues, uncaught errors, or database connection problems.
 
